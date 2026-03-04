@@ -10,6 +10,9 @@ Interactive browser simulation of a robotic spider with real-time gait controls.
 - Adjustable number of leg pairs (3-6)
 - Body stabilization/bob control
 - Color control
+- Direction control (left / idle / right)
+- Camera zoom control
+- Terrain modes (flat, wavy, rocky)
 - Pause/Resume, Reset, and Randomize actions
 
 ## Run locally
