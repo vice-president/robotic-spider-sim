@@ -3,66 +3,52 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Robotic Spider Simulation</title>
+  <title>3D Robotic Spider Simulation</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <main class="app">
     <section class="sim-wrap">
-      <canvas id="simCanvas" width="1100" height="650" aria-label="Robotic spider simulation"></canvas>
+      <div id="sim3d" aria-label="3D robotic spider simulation"></div>
     </section>
 
     <aside class="panel">
-      <h1>Robotic Spider</h1>
-      <p class="sub">Web-based simulation with live controls.</p>
+      <h1>3D Robotic Spider</h1>
+      <p class="sub">More realistic gait with inverse-kinematics-like leg motion.</p>
 
       <div class="control">
-        <label for="speed">Leg Speed <span id="speedVal">1.2</span>x</label>
-        <input id="speed" type="range" min="0" max="4" step="0.05" value="1.2" />
+        <label for="speed">Gait Speed <span id="speedVal">1.1</span>x</label>
+        <input id="speed" type="range" min="0" max="3.5" step="0.05" value="1.1" />
       </div>
 
       <div class="control">
-        <label for="stride">Stride Length <span id="strideVal">42</span></label>
-        <input id="stride" type="range" min="10" max="90" step="1" value="42" />
+        <label for="stride">Stride Length <span id="strideVal">0.65</span></label>
+        <input id="stride" type="range" min="0.2" max="1.2" step="0.01" value="0.65" />
       </div>
 
       <div class="control">
-        <label for="lift">Lift Height <span id="liftVal">30</span></label>
-        <input id="lift" type="range" min="5" max="70" step="1" value="30" />
+        <label for="lift">Lift Height <span id="liftVal">0.36</span></label>
+        <input id="lift" type="range" min="0.05" max="0.8" step="0.01" value="0.36" />
       </div>
 
       <div class="control">
-        <label for="legs">Leg Pairs <span id="legsVal">4</span></label>
-        <input id="legs" type="range" min="3" max="6" step="1" value="4" />
+        <label for="bodyHeight">Body Height <span id="bodyHeightVal">1.05</span></label>
+        <input id="bodyHeight" type="range" min="0.6" max="1.6" step="0.01" value="1.05" />
       </div>
 
       <div class="control">
-        <label for="bodyBob">Body Stabilization <span id="bodyBobVal">0.45</span></label>
-        <input id="bodyBob" type="range" min="0" max="1" step="0.01" value="0.45" />
+        <label for="terrain">Terrain Roughness <span id="terrainVal">0.30</span></label>
+        <input id="terrain" type="range" min="0" max="1" step="0.01" value="0.30" />
       </div>
 
       <div class="control">
-        <label for="hue">Body Color Hue <span id="hueVal">180</span>°</label>
-        <input id="hue" type="range" min="0" max="360" step="1" value="180" />
+        <label for="cameraYaw">Camera Orbit <span id="cameraYawVal">35</span>°</label>
+        <input id="cameraYaw" type="range" min="-180" max="180" step="1" value="35" />
       </div>
 
       <div class="control">
-        <label for="direction">Direction <span id="directionVal">1</span></label>
-        <input id="direction" type="range" min="-1" max="1" step="1" value="1" />
-      </div>
-
-      <div class="control">
-        <label for="zoom">Camera Zoom <span id="zoomVal">1.00</span>x</label>
-        <input id="zoom" type="range" min="0.7" max="1.5" step="0.01" value="1" />
-      </div>
-
-      <div class="control">
-        <label for="terrain">Terrain</label>
-        <select id="terrain">
-          <option value="flat" selected>Flat</option>
-          <option value="wavy">Wavy</option>
-          <option value="rocky">Rocky</option>
-        </select>
+        <label for="cameraZoom">Camera Distance <span id="cameraZoomVal">8.5</span></label>
+        <input id="cameraZoom" type="range" min="5" max="14" step="0.1" value="8.5" />
       </div>
 
       <div class="buttons">
@@ -71,10 +57,10 @@
         <button id="randomBtn" type="button">Randomize</button>
       </div>
 
-      <p class="hint">Tip: Drag sliders while running to tune gait in real-time.</p>
+      <p class="hint">Mouse drag to rotate, wheel to zoom. Sliders update gait in real time.</p>
     </aside>
   </main>
 
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
