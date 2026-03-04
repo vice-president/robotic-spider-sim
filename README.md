@@ -1,37 +1,29 @@
-# Robotic Spider Simulation (Web)
+# 3D Robotic Spider Simulation (Web)
 
-Interactive browser simulation of a robotic spider with real-time gait controls.
+Interactive browser simulation of a **3D robotic spider** with more realistic animated gait.
 
 ## Features
 
-- Leg speed control
-- Stride length control
-- Lift height control
-- Adjustable number of leg pairs (3-6)
-- Body stabilization/bob control
-- Color control
-- Direction control (left / idle / right)
-- Camera zoom control
-- Terrain modes (flat, wavy, rocky)
+- Real-time 3D rendering with Three.js
+- Eight animated articulated legs
+- Gait speed, stride length, and lift height controls
+- Body height control
+- Dynamic rough terrain deformation
+- Camera orbit + distance controls
 - Pause/Resume, Reset, and Randomize actions
 
 ## Run locally
 
-Open `index.html` in a browser.
+Open `index.html` in a browser with internet access (loads Three.js modules from CDN).
 
 ## Deploy on GitHub Pages
 
-1. Push this folder to a GitHub repository.
+1. Push to a GitHub repository.
 2. In GitHub: **Settings → Pages**.
-3. Under **Build and deployment**, choose:
-   - Source: `Deploy from a branch`
-   - Branch: `main`
-   - Folder: `/ (root)`
-4. Save. GitHub will publish your site.
-5. Your live URL will look like:
-   - `https://<username>.github.io/<repo-name>/`
+3. Source: `Deploy from a branch`
+4. Branch: `main`, Folder: `/ (root)`
+5. Save and wait for publish.
 
-## Notes
+## Live URL format
 
-- Pure HTML/CSS/JS (no build tools required)
-- Works well on desktop and mobile
+`https://<username>.github.io/<repo-name>/`
