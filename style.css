@@ -52,9 +52,17 @@ h1 {
   color: #c8d6f1;
   margin-bottom: 6px;
 }
-.control input[type="range"] {
+.control input[type="range"],
+.control select {
   width: 100%;
   accent-color: #53d3ff;
+}
+.control select {
+  background: #152238;
+  color: #e8f0ff;
+  border: 1px solid #2f4468;
+  border-radius: 8px;
+  padding: 8px;
 }
 
 .buttons {
