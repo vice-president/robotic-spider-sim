@@ -10,6 +10,7 @@ const controlsUI = {
   bodyHeight: document.getElementById('bodyHeight'),
   terrain: document.getElementById('terrain'),
   cameraYaw: document.getElementById('cameraYaw'),
+  cameraTilt: document.getElementById('cameraTilt'),
   cameraZoom: document.getElementById('cameraZoom'),
 };
 
@@ -20,6 +21,7 @@ const values = {
   bodyHeightVal: document.getElementById('bodyHeightVal'),
   terrainVal: document.getElementById('terrainVal'),
   cameraYawVal: document.getElementById('cameraYawVal'),
+  cameraTiltVal: document.getElementById('cameraTiltVal'),
   cameraZoomVal: document.getElementById('cameraZoomVal'),
 };
 
@@ -36,6 +38,7 @@ const defaults = {
   bodyHeight: 1.05,
   terrain: 0.3,
   cameraYaw: 35,
+  cameraTilt: 63,
   cameraZoom: 8.5,
 };
 
@@ -47,6 +50,7 @@ function state() {
     bodyHeight: +controlsUI.bodyHeight.value,
     terrain: +controlsUI.terrain.value,
     cameraYaw: +controlsUI.cameraYaw.value,
+    cameraTilt: +controlsUI.cameraTilt.value,
     cameraZoom: +controlsUI.cameraZoom.value,
   };
 }
@@ -59,6 +63,7 @@ function syncLabels() {
   values.bodyHeightVal.textContent = s.bodyHeight.toFixed(2);
   values.terrainVal.textContent = s.terrain.toFixed(2);
   values.cameraYawVal.textContent = Math.round(s.cameraYaw).toString();
+  values.cameraTiltVal.textContent = Math.round(s.cameraTilt).toString();
   values.cameraZoomVal.textContent = s.cameraZoom.toFixed(1);
 }
 Object.values(controlsUI).forEach((el) => el.addEventListener('input', syncLabels));
@@ -76,6 +81,9 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(root.clientWidth, root.clientHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
 root.appendChild(renderer.domElement);
 
 const orbit = new OrbitControls(camera, renderer.domElement);
@@ -97,12 +105,24 @@ const fill = new THREE.PointLight('#87d8ff', 0.8, 20);
 fill.position.set(-4, 2, -3);
 scene.add(fill);
 
+const rim = new THREE.DirectionalLight('#8ab6ff', 0.6);
+rim.position.set(-6, 5, -4);
+scene.add(rim);
+
 const groundGeo = new THREE.PlaneGeometry(24, 24, 120, 120);
 const groundMat = new THREE.MeshStandardMaterial({ color: '#1a2533', roughness: 0.95, metalness: 0.02 });
 const ground = new THREE.Mesh(groundGeo, groundMat);
 ground.rotation.x = -Math.PI / 2;
 ground.receiveShadow = true;
 scene.add(ground);
+
+const contactShadow = new THREE.Mesh(
+  new THREE.CircleGeometry(1.8, 40),
+  new THREE.MeshBasicMaterial({ color: '#000000', transparent: true, opacity: 0.22 })
+);
+contactShadow.rotation.x = -Math.PI / 2;
+contactShadow.position.y = 0.03;
+scene.add(contactShadow);
 
 const spider = new THREE.Group();
 scene.add(spider);
@@ -139,6 +159,27 @@ dorsalPlate.rotation.z = Math.PI / 2;
 dorsalPlate.position.set(-0.08, 0.34, 0);
 dorsalPlate.castShadow = true;
 spider.add(dorsalPlate);
+
+for (let i = 0; i < 4; i++) {
+  const stripe = new THREE.Mesh(
+    new THREE.TorusGeometry(0.24 + i * 0.06, 0.018, 12, 24),
+    new THREE.MeshStandardMaterial({ color: '#aebcd0', metalness: 0.78, roughness: 0.22 })
+  );
+  stripe.rotation.x = Math.PI / 2;
+  stripe.position.set(-0.7 - i * 0.18, 0.2 - i * 0.01, 0);
+  stripe.castShadow = true;
+  spider.add(stripe);
+}
+
+const mandibleMat = new THREE.MeshStandardMaterial({ color: '#9fb3cc', metalness: 0.75, roughness: 0.25 });
+for (const side of [-1, 1]) {
+  const fang = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.34, 10), mandibleMat);
+  fang.position.set(1.48, -0.12, side * 0.12);
+  fang.rotation.z = side * 0.18;
+  fang.rotation.x = Math.PI;
+  fang.castShadow = true;
+  spider.add(fang);
+}
 
 function terrainHeight(x, z, roughness) {
   return (
@@ -245,11 +286,13 @@ function updateLegs(s) {
 
 function updateCameraFromUI(s) {
   const yaw = THREE.MathUtils.degToRad(s.cameraYaw);
+  const tilt = THREE.MathUtils.degToRad(s.cameraTilt);
   const dist = s.cameraZoom;
   const target = orbit.target;
-  camera.position.x = target.x + Math.cos(yaw) * dist;
-  camera.position.z = target.z + Math.sin(yaw) * dist;
-  camera.position.y = 3.5 + dist * 0.12;
+  const horizontal = Math.cos(tilt) * dist;
+  camera.position.x = target.x + Math.cos(yaw) * horizontal;
+  camera.position.z = target.z + Math.sin(yaw) * horizontal;
+  camera.position.y = target.y + Math.sin(tilt) * dist;
 }
 
 function animate() {
@@ -265,6 +308,11 @@ function animate() {
   bodyBobPivot.position.y = s.bodyHeight + Math.sin(sim.t * s.speed * 5.5) * 0.08;
   bodyBobPivot.rotation.y = Math.sin(sim.t * s.speed * 2.2) * 0.05;
   spider.rotation.x = Math.sin(sim.t * s.speed * 5.5) * 0.03;
+
+  contactShadow.position.x = bodyBobPivot.position.x;
+  contactShadow.position.z = bodyBobPivot.position.z;
+  const shadowScale = 1.0 + (1.4 - s.bodyHeight) * 0.25;
+  contactShadow.scale.setScalar(Math.max(0.75, Math.min(1.2, shadowScale)));
 
   updateCameraFromUI(s);
   orbit.update();
@@ -296,6 +344,7 @@ randomBtn.addEventListener('click', () => {
   controlsUI.bodyHeight.value = (Math.random() * 0.8 + 0.7).toFixed(2);
   controlsUI.terrain.value = (Math.random() * 0.9).toFixed(2);
   controlsUI.cameraYaw.value = Math.floor(Math.random() * 360 - 180);
+  controlsUI.cameraTilt.value = Math.floor(Math.random() * 45 + 38);
   controlsUI.cameraZoom.value = (Math.random() * 6 + 6).toFixed(1);
   syncLabels();
 });
