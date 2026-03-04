@@ -14,7 +14,7 @@ Interactive browser simulation of a **3D robotic spider** with more realistic an
 
 ## Run locally
 
-Open `index.html` in a browser with internet access (loads Three.js modules from CDN).
+Open `index.html` in a browser. (Three.js is vendored locally in the repo; no CDN dependency.)
 
 ## Deploy on GitHub Pages
 
